@@ -1,4 +1,8 @@
-# Gotcha 2024
-This is the source code for the 2023-2024 Gotcha Game at Milton Academy. It has a Swift Frontend with a Firebase/Node.js backend. We hope to expand to other schools in the near future. 
+# Gotcha 2025
+This repo has the source code for the 2025-2026 Gotcha game. 
 
-Developed by Blake Ankner, Yaman Habip, Thomas Hong, Andrew Rodriguez, Ryan Shue of the class of 2023 as well As Ben Rhodes-Kropf class of 2024.
+## Structure 
+
+`/FrontEnd` contains the entire Swift app. 
+`/DataStuff` contains the backend functions for uploading the csv files of names and emails to Firebase, as well as creating the tagger chain. 
+`functions` contains some Firebase Cloud Functions. 
