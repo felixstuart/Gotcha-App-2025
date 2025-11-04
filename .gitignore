@@ -8,7 +8,7 @@
 **/.firebaserc
 service-account-key.json
 GoogleService-Info.plist
-
+DataStuff/*.json
 
 ### Firebase Patch ###
 .runtimeconfig.json
