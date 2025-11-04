@@ -2,18 +2,33 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.926744591444-8dd38m8174uajdtav06k0a26c8209u5n</string>
-			</array>
-		</dict>
-	</array>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleName</key>
+	<string>Gotcha</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.felixstuart.gotcha</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.googleusercontent.apps.680586060563-9rltsr0onrl9ukqkmcbpetbbap154oh1</string>
+            </array>
+        </dict>
+    </array>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+    <key>UILaunchScreen</key>
+    <dict>
+        <key>UIColorName</key>
+        <string>LaunchScreenBackground</string>
+        <key>UIImageName</key>
+        <string>LaunchImage</string>
+    </dict>
 </dict>
 </plist>

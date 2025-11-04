@@ -12,7 +12,7 @@ import CoreHaptics
 import AVKit
 
 struct MainView: View {
-        
+    
     let model: UserAuthModel //Make object of the Auth Model
     @State private var isIn: Bool = true
     @State private var show_glitch_screen: Bool = false
@@ -36,170 +36,187 @@ struct MainView: View {
     
     let game_started = UserDefaults.standard.bool(forKey: "game_on")
     let minDragTranslationForSwipe: CGFloat = 50
+    
+    
+    //    initializer for preview to allow more granular control over the display
+    //    the #if prevents the initializer from being compiled into the production build,
+    //    so make sure not to use it outside of the previews
+#if DEBUG
+    init(model: UserAuthModel, UID: Binding<String>, initialIn: Bool = true, isLoading: Bool = false, hasLastWords: Bool = false) {
+        self.model = model;
+        self._UID = UID
+        self._isIn = State(initialValue: initialIn)
+        self._isLoading = State(initialValue: isLoading)
+        self._hasLastWords = State(initialValue: hasLastWords)
         
+    }
+#endif
     var body: some View {
-                
-        VStack{
-            ZStack{ //Builds back to front as it reads
-                if model.isLoggedIn && model.partOfMilton{ //if the user is logged in through oauth
-                    TabView(selection: $selectedTab){ //make tab view with:
-                        if isIn{
-                            ProfileView(model_passed: model, isOut_passed: $isIn, glitch_bool: $show_glitch_screen,audioPlayer: $audioPlayer, target_name: $target_name, tag_count: $tag_count, name: $full_name,leaderBoard_pos: 10) //Profile View
-    //                        ProfileView()
-                                .onAppear{
-//                                    print(UID + "<-- UID")
-                                }
-                                .preferredColorScheme(.dark)
-                                .tabItem { //added to tab bar @ bottom of screen
-                                    Image(systemName: "person.fill")
-                                }
-                                .tag(0)
-                                .highPriorityGesture(DragGesture().onEnded({self.handleSwipe(translation: $0.translation.width)}))
-                        }
-                        
-                        LeaderBoardView() //Leader Board View
-                            .preferredColorScheme(.dark)
-                            .tabItem { //added to tab bar @ bottom of screen
-                                Image(systemName: "crown.fill")
+        VStack {
+            //            check model states before building the UI
+            //            this VStack contains most of the UI when the app is in use
+            VStack{
+                ZStack{ //Builds back to front as it reads
+                    if model.isLoggedIn && model.partOfMilton{ //if the user is logged in through oauth
+                        TabView(selection: $selectedTab){ //make tab view with:
+                            if isIn{
+                                ProfileView(model_passed: model, isOut_passed: $isIn, glitch_bool: $show_glitch_screen,audioPlayer: $audioPlayer, target_name: $target_name, tag_count: $tag_count, name: $full_name,leaderBoard_pos: 10) //Profile View
+                                    .preferredColorScheme(.dark)
+                                    .tabItem { //added to tab bar @ bottom of screen
+                                        Label("Profile", systemImage: "person.fill")
+                                    }
+                                    .tag(0)
+                                    .highPriorityGesture(DragGesture().onEnded({self.handleSwipe(translation: $0.translation.width)}))
                             }
-                            .tag(1)
-                            .highPriorityGesture(DragGesture().onEnded({self.handleSwipe(translation: $0.translation.width)}))
-                        
-                        SignOutView(model_passed: model) //Leader Board View
-                            .preferredColorScheme(.dark)
-                            .tabItem { //added to tab bar @ bottom of screen
-                                Image(systemName: "person.crop.circle.fill.badge.xmark")
-                            }
-                            .tag(2)
-                            .highPriorityGesture(DragGesture().onEnded({self.handleSwipe(translation: $0.translation.width)}))
-                    }
-                    .accentColor(Color("white")) //tab bar button color when tab is being viewed
-                }
-//                Conditional LoginView display
-                if !isIn && model.partOfMilton && model.isLoggedIn{
-                    ZStack{
-                        TabView(selection: $selectedTab){
+                            
                             LeaderBoardView() //Leader Board View
                                 .preferredColorScheme(.dark)
                                 .tabItem { //added to tab bar @ bottom of screen
                                     Label("Leaderboard", systemImage: "crown.fill")
                                 }
-                                .tag(0)
+                                .tag(1)
                                 .highPriorityGesture(DragGesture().onEnded({self.handleSwipe(translation: $0.translation.width)}))
                             
                             SignOutView(model_passed: model) //Leader Board View
                                 .preferredColorScheme(.dark)
                                 .tabItem { //added to tab bar @ bottom of screen
-                                    Label("Sign Out", systemImage: "person.crop.circle.fill.badge.xmark")
+                                    Image(systemName: "person.crop.circle.fill.badge.xmark")
                                 }
-                                .tag(1)
+                                .tag(2)
                                 .highPriorityGesture(DragGesture().onEnded({self.handleSwipe(translation: $0.translation.width)}))
                         }
-                        .accentColor(Color("secondBlue")) //tab bar button color when tab is being viewed
-                        
-                        if !hasLastWords{
-                            if show_tag_screen{
-                                VStack{
-                                    TaggedOutView(model_passed: model, tagged_view: $show_tag_screen, name: $full_name, audioPlayer: $audioPlayer)
-                                        .background(.black)
-                                        .frame(width: .infinity, height: .infinity, alignment: .center)
+                        .accentColor(Color("white")) //tab bar button color when tab is being viewed
+                    }
+                    //                Conditional LoginView display
+                    if !isIn && model.partOfMilton && model.isLoggedIn{
+                        ZStack{
+                            TabView(selection: $selectedTab){
+                                LeaderBoardView() //Leader Board View
+                                    .preferredColorScheme(.dark)
+                                    .tabItem { //added to tab bar @ bottom of screen
+                                        Label("Leaderboard", systemImage: "crown.fill")
+                                    }
+                                    .tag(0)
+                                    .highPriorityGesture(DragGesture().onEnded({self.handleSwipe(translation: $0.translation.width)}))
                                 
+                                SignOutView(model_passed: model) //Leader Board View
+                                    .preferredColorScheme(.dark)
+                                    .tabItem { //added to tab bar @ bottom of screen
+                                        Label("Sign Out", systemImage: "person.crop.circle.fill.badge.xmark")
+                                    }
+                                    .tag(1)
+                                    .highPriorityGesture(DragGesture().onEnded({self.handleSwipe(translation: $0.translation.width)}))
+                            }
+                            .accentColor(Color("secondBlue")) //tab bar button color when tab is being viewed
+                            
+                            if !hasLastWords{
+                                if show_tag_screen{
+                                    VStack{
+                                        TaggedOutView(model_passed: model, tagged_view: $show_tag_screen, name: $full_name, audioPlayer: $audioPlayer)
+                                            .background(.black)
+                                            .frame(width: .infinity, height: .infinity, alignment: .center)
+                                        
+                                    }
+                                }
+
+                                if show_glitch_screen{
+                                    VStack{
+                                        GifImageView(name: "death-gif-4")
+                                            .frame(width: .infinity, height: .infinity, alignment: .center)
+                                        GifImageView(name: "death-gif-4")
+                                            .frame(width: .infinity, height: .infinity, alignment: .bottom)
+                                            .offset(y: -15)
+                                    }
+                                    .background(Color("black"))
+                                    .frame(width: .infinity, height: .infinity, alignment: .center)
+                                    .onAppear {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                                            self.show_glitch_screen.toggle()
+                                        }
+                                    }
                                 }
                             }
-                            if show_glitch_screen{
-                                VStack{
-//                                    GifImageView(name: "death-gif-4")
-//                                        .frame(width: .infinity, height: .infinity, alignment: .center)
-//                                    GifImageView(name: "death-gif-4")
-//                                        .frame(width: .infinity, height: .infinity, alignment: .bottom)
-//                                        .offset(y: -15)
-                                }
-                                .background(Color("black"))
-                                .frame(width: .infinity, height: .infinity, alignment: .center)
-                                .onAppear {
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-                                                    self.show_glitch_screen.toggle()
-                                                }
-                                            }
-                                }
                         }
                     }
-                }
-                if !gotchaTime && (!game_started || game_started == nil){
-                    CountdownView(model: model, dDay: $gotchaTime, name: $full_name,referenceDate: Date()) //Countdown View !!WONT BE HERE IN REAL APP!! !!NEED T PASS OUR STORED NAME NOT FROM GOOGLE!!
-                        .preferredColorScheme(.dark)
-                        .tabItem { //added to tab bar @ bottom of screen
-                            Label("Countdown", systemImage: "timer")
-                        }
-                }
-                if isLoading{
-                    LoadingView()
-                        .preferredColorScheme(.dark)
-                        .onAppear{
-                            Task{ //tasks to backend
-                //                UID = model.email
-                                
-                                if model.isLoggedIn{
-                                    target_name = await fullName(uid: targ(uid: UID))
-                                    tag_count = await tags(uid: UID)
+                    if !gotchaTime && (!game_started || game_started == nil){
+                        CountdownView(model: model, dDay: $gotchaTime, name: $full_name,referenceDate: Date()) //Countdown View !!WONT BE HERE IN REAL APP!! !!NEED T PASS OUR STORED NAME NOT FROM GOOGLE!!
+                            .preferredColorScheme(.dark)
+                            .tabItem { //added to tab bar @ bottom of screen
+                                Label("Countdown", systemImage: "timer")
+                            }
+                    }
+                    if isLoading{
+                        LoadingView()
+                            .preferredColorScheme(.dark)
+                            .onAppear{
+                                Task{ //tasks to backend
+                                      //                UID = model.email
                                     
-                                    full_name = await fullName(uid: UID)
-                                    
-                                    isIn = await lifeStatus(uid: UID)
-                                    
-                                    if !isIn{
-                                        numTabs = 2
-                                    }
-                                    else{
-                                        numTabs = 3
-                                    }
-                                                    
-                                    let lastWords = await lWStatus(uid: UID)
-                                    if lastWords != ""{
-                                        hasLastWords = true
-                                    }
-                                    
-//                                    print(gotchaTime)
-                                    
-                                    if target_name != nil && tag_count != nil && isIn != nil && lastWords != nil && model.isLoggedIn != nil && game_started != nil{
-//                                        print("In here")
-                                        self.isLoading.toggle()
+                                    if model.isLoggedIn{
+                                        target_name = await fullName(uid: targ(uid: UID))
+                                        tag_count = await tags(uid: UID)
+                                        
+                                        full_name = await fullName(uid: UID)
+                                        
+                                        isIn = await lifeStatus(uid: UID)
+                                        
+                                        if !isIn{
+                                            numTabs = 2
+                                        }
+                                        else{
+                                            numTabs = 3
+                                        }
+                                        
+                                        let lastWords = await lWStatus(uid: UID)
+                                        if lastWords != ""{
+                                            hasLastWords = true
+                                        }
+                                        
+                                        //                                    print(gotchaTime)
+                                        
+                                        if target_name != nil && tag_count != nil && isIn != nil && lastWords != nil && model.isLoggedIn != nil && game_started != nil{
+                                            //                                        print("In here")
+                                            self.isLoading.toggle()
+                                        }
                                     }
                                 }
                             }
-                        }
+                    }
+                    if !model.isLoggedIn{ // //if user NOT logged in
+                        LoginView(model_passed: model, UID: $UID) //Login View
+                            .preferredColorScheme(.dark)
+                    }
                 }
-//                if !model.isLoggedIn{ // //if user NOT logged in
-//                    LoginView(model_passed: model, UID: $UID) //Login View
-//                        .preferredColorScheme(.dark)
-//                }
             }
-        }
-        .onAppear{ //when screen is first shown LOAD THE USER INFO ONCE!
-            
-//            UserDefaults.standard.set(false, forKey: "game_on")
-            
-//            TODO for timeOoutCountdown:
-//            - Make User Default turn to true during day
-            
-//            print("GAME ON: \(UserDefaults.standard.bool(forKey: "game_on"))")
-            
-            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-            UITabBar.appearance().unselectedItemTintColor = UIColor(Color("mediumGrey"))
-            
-            AppDelegate.orientationLock = .portrait
-            
-        }
-        .refreshable { //when the screen is reloaded
-            if model.isLoggedIn{
-                target_name = await fullName(uid: targ(uid: UID))
-                tag_count = await tags(uid: UID)
+            .onAppear{ //when screen is first shown LOAD THE USER INFO ONCE!
                 
-                isIn = await lifeStatus(uid: UID)
+                //            UserDefaults.standard.set(false, forKey: "game_on")
+                //
+                //            TODO for timeOoutCountdown:
+                //            - Make User Default turn to true during day
+                
+                //            print("GAME ON: \(UserDefaults.standard.bool(forKey: "game_on"))")
+                
+                UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+                UITabBar.appearance().unselectedItemTintColor = UIColor(Color("mediumGrey"))
+                
+                AppDelegate.orientationLock = .portrait
+                
             }
+            .refreshable { //when the screen is reloaded
+                if model.isLoggedIn{
+                    target_name = await fullName(uid: targ(uid: UID))
+                    tag_count = await tags(uid: UID)
+                    
+                    isIn = await lifeStatus(uid: UID)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea()
         }
+        
     }
-    private func handleSwipe(translation: CGFloat) {
+    func handleSwipe(translation: CGFloat) {
         if translation > minDragTranslationForSwipe && selectedTab > 0 {
             selectedTab -= 1
         } else  if translation < -minDragTranslationForSwipe && selectedTab < numTabs-1 {
@@ -207,6 +224,7 @@ struct MainView: View {
         }
     }
 }
+
 
 struct UsefulValues {
     static var cornerRadius = 30.0
@@ -219,3 +237,53 @@ struct UsefulValues {
 //            .preferredColorScheme(.dark)
 //    }
 //}
+
+#Preview("Alive") {
+    struct PreviewContainer: View {
+        @State private var uid: String = "preview-uid"
+        var body: some View {
+            let felix = UserAuthModel()
+            felix.isLoggedIn = true
+            felix.partOfMilton = true
+            felix.givenName = "Felix"
+            felix.email = "felix_stuart27@milton.edu"
+            felix.profilePicUrl = "https://placeholder.co/400x400"
+            return MainView(model: felix, UID: $uid, isLoading: false)
+                .preferredColorScheme(.dark)
+        }
+    }
+    return PreviewContainer()
+}
+#Preview("Tagged Out") {
+    struct PreviewContainer: View {
+        @State private var uid: String = "preview-uid"
+        var body: some View {
+            let felix = UserAuthModel()
+            felix.isLoggedIn = true
+            felix.partOfMilton = true
+            felix.givenName = "Felix"
+            felix.email = "felix_stuart27@milton.edu"
+            felix.profilePicUrl = "https://placeholder.co/400x400"
+            return MainView(model: felix, UID: $uid, initialIn: false, isLoading: false, hasLastWords: true)
+                .preferredColorScheme(.dark)
+        }
+    }
+    return PreviewContainer()
+}
+
+#Preview("Loading") {
+    struct PreviewContainer: View {
+        @State private var uid: String = "preview-uid"
+        var body: some View {
+            let felix = UserAuthModel()
+            felix.isLoggedIn = true
+            felix.partOfMilton = true
+            felix.givenName = "Felix"
+            felix.email = "felix_stuart27@milton.edu"
+            felix.profilePicUrl = "https://placeholder.co/400x400"
+            return MainView(model: felix, UID: $uid, isLoading: true)
+                .preferredColorScheme(.dark)
+        }
+    }
+    return PreviewContainer()
+}

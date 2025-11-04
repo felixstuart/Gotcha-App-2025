@@ -19,22 +19,34 @@ extension Date {
 //Needs to be async and have the proper returns
 
 func lifeStatus(uid: String) async -> Bool{
+    // Log the uid being fetched
+    print("fetching uid: \(uid)")
+
+    // Get default Firestore instance
     let db = Firestore.firestore()
-    print("fetching uid:" + uid)
+
+    // Reference to the user's document
     let docRef = db.document("data/" + uid)
-    var retVal = true as Bool
-    
+
+    // Default return value
+    var retVal: Bool = true
+
     do {
-        let data = try await docRef.getDocument()
-        
-        let life = data.get("alive") as? Bool
-        
-        retVal = life!
-        
-    }catch{
-        print("err")
+        // Fetch the document asynchronously
+        let snapshot = try await docRef.getDocument()
+
+        // Read the `alive` field as Bool if present
+        if let life = snapshot.get("alive") as? Bool {
+            retVal = life
+        } else {
+            // Field missing or wrong type
+            print("lifeStatus: 'alive' field missing or not a Bool for uid: \(uid)")
+        }
+    } catch {
+        // Surface any errors for debugging
+        print("lifeStatus error for uid \(uid): \(error)")
     }
-    
+
     return retVal
 }
 
@@ -313,3 +325,4 @@ func tagOut(uid: String, lW: String, name: String,TimeStanp: Date){
         ])
     }
 }
+

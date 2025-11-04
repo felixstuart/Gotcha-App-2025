@@ -86,8 +86,17 @@ struct LoginView: View {
     
 }
 
-//struct LoginView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        LoginView(model: model)
-//    }
-//}
+struct LoginView_Previews: PreviewProvider {
+    struct PreviewWrapper: View {
+        @State private var uid: String = ""
+        let model = UserAuthModel()
+        var body: some View {
+            LoginView(model_passed: model, UID: $uid)
+        }
+    }
+
+    static var previews: some View {
+        PreviewWrapper()
+            .previewDisplayName("LoginView Preview")
+    }
+}

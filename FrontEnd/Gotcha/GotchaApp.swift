@@ -29,8 +29,11 @@ struct GotchaApp: App {
                 }
                 else{
                     MainView(model: model,UID: $UID)
+
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .preferredColorScheme(.dark)
         }
     }
 }

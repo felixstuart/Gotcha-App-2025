@@ -235,11 +235,24 @@ struct TagButton: View {
 }
 
 ////Preview Provider
-//struct ProfileView_Previews: PreviewProvider {
-////    @StateObject var model = UserAuthModel()
-//    static var previews: some View {
-//        ProfileView(isOut_passed: .constant(false), glitch_bool: .constant(false), target_name: .constant("Blake"), tag_count: .constant(10), leaderBoard_pos: 5)
-//            .preferredColorScheme(.dark)
-//            .previewInterfaceOrientation(.portrait)
-//    }
-//}
+struct ProfileView_Previews: PreviewProvider {
+//    @StateObject var model = UserAuthModel()
+    static var previews: some View {
+        // Minimal mock values to satisfy initializer
+        let mockModel = UserAuthModel()
+        
+        return ProfileView(
+            model_passed: mockModel,
+            isOut_passed: .constant(false),
+            glitch_bool: .constant(false),
+            audioPlayer: .constant(nil),
+            target_name: .constant("Blake"),
+            tag_count: .constant(10),
+            name: .constant("Preview User"),
+            leaderBoard_pos: 5
+        )
+        .preferredColorScheme(.dark)
+        .previewInterfaceOrientation(.portrait)
+    }
+}
+
